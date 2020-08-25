@@ -1,11 +1,43 @@
 // Links to the COVID-19 APIs
+const dictAPIs = {
+                  'dailyCasesTotal': {
+                    'url': 'https://data.cityofchicago.org/resource/naz8-j4nc.json',
+                    'description': 'Number of cases, total'
+                  },
+                  'dailyCaseRate': {
+                    'url': 'https://data.cityofchicago.org/resource/e68t-c7fv.json',
+                    'description': 'Number of cases per 100,000 population'
+                  },
+                  'dailyDeathsTotal': {
+                    'url': 'https://data.cityofchicago.org/resource/naz8-j4nc.json',
+                    'description': 'Number of deaths, total'
+                  },
+                  'dailyDeathsRate': {
+                    'url': 'https://data.cityofchicago.org/resource/naz8-j4nc.json',
+                    'description': 'Number of deaths per 100,000 population'
+                  },
+                  'weeklyByZip': {
+                    'url': 'https://data.cityofchicago.org/resource/yhhz-zm2v.json',
+                    'description': 'TK' // Need to update this depending on use
+                  },
+                  'dailyTestByPerson': {
+                    'url': 'https://data.cityofchicago.org/resource/t4hh-4ku9.json',
+                    'description': 'Percent positivity, by number of people tested'
+                  },
+                  'dailyTestByTest': {
+                    'url': 'https://data.cityofchicago.org/resource/gkdw-2tgv.json',
+                    'description': 'Percent positivity, by number of tests'
+                  }
+                }
+
+// Need to get rid of this
 const dailyCasesDeaths = 'https://data.cityofchicago.org/resource/naz8-j4nc.json'
 const dailyRateURL = 'https://data.cityofchicago.org/resource/e68t-c7fv.json'
 const weeklyRateURL = 'https://data.cityofchicago.org/resource/yhhz-zm2v.json'
 const dailyTestPerson = 'https://data.cityofchicago.org/resource/t4hh-4ku9.json'
 const dailyTests = 'https://data.cityofchicago.org/resource/gkdw-2tgv.json'
 
-// These should probably be in the CSS file
+// These should probably be in the CSS file?
 const chiBlue = 'rgba(65, 182, 230, 1)'
 const chiRed = 'rgba(228, 0, 43, 1)'
 const chiGrey= 'rgba(179, 179, 179, 1)'
@@ -32,7 +64,6 @@ const grayLightest = 'rgba(241, 241, 241, 1)'
 
 const white = 'rgba(0, 0, 0, 0)'
 
-//Chart.defaults.scale.gridLines.drawOnChartArea = false;
 // This creates the vertical line tooltip
 // Source: https://stackoverflow.com/questions/45159895/moving-vertical-line-when-hovering-over-the-chart-using-chart-js
 Chart.defaults.LineWithLine = Chart.defaults.line;
@@ -53,14 +84,20 @@ Chart.controllers.LineWithLine = Chart.controllers.line.extend({
        ctx.moveTo(x, topY);
        ctx.lineTo(x, bottomY);
        ctx.lineWidth = 2;
-       ctx.strokeStyle = chiBlue;
+       ctx.strokeStyle = lightestRed;
        ctx.stroke();
        ctx.restore();
     }
   }
 });
 
-async function addLine(value, text, orientation, axis) {
+// Build annotations
+// Source: http://www.java2s.com/example/javascript/chart.js/add-a-horizontal-line-at-a-specific-point-in-chartjs-when-hovering.html
+var lines = ({});
+var id = 0;
+var linesOn = false;
+
+async function addLine(chart, value, text, orientation, axis) {
   id++;
   var ln = {
     id: "line" + id,
@@ -79,83 +116,91 @@ async function addLine(value, text, orientation, axis) {
       xAdjust: -140
     }
   };
-  lines.push(ln);
-  //console.log(lines)
+
+  if (typeof lines[chart] == "undefined") {
+    console.log("Undefined value, need to create an empty array")
+    lines[chart] = [];
+  }
+
+  lines[chart].push(ln);
+  console.log(lines)
 }
 
-var case_option = {
-  title: {
-    display: true,
-    text: 'Case rate per 100,000 over time'
-  },
-  layout: {
-    padding: 25
-  },
-  tooltips: {
-    mode: 'index',
-    intersect: false
-  },
-  elements: {
-    point: {
-      radius: 0
-    }
-  },
-  scales: {
-       xAxes: [{
-         gridLines: {
-            display: false,
-            drawBorder: false,
-          }
-       }],
-       yAxes: [{
-          gridLines: {
-            drawBorder: false,
-            drawOnChartArea: true,
-            color: chiGrey,
-            borderDash: [2, 5]
-           }
-        }]
-   }
+// Build out the options for charts
+async function formatChartOptions(type) {
+  var basicLine = {
+    title: {
+      display: true,
+      text: dictAPIs[type].description
+    },
+    layout: {
+      padding: 25
+    },
+    tooltips: {
+      mode: 'index',
+      intersect: false
+    },
+    elements: {
+      point: {
+        radius: 0
+      }
+    },
+    scales: {
+         xAxes: [{
+           gridLines: {
+              display: false,
+              drawBorder: false,
+            }
+         }],
+         yAxes: [{
+            gridLines: {
+              drawBorder: false,
+              drawOnChartArea: true,
+              color: chiGrey,
+              borderDash: [2, 5]
+             }
+          }]
+     }
+  };
+
+  var basicBar = {
+    scales: {
+      xAxes: [{
+        gridLines: {
+           display: false,
+           drawBorder: false,
+         }
+      }],
+      yAxes: {
+        gridLines: {
+          drawBorder: false,
+          drawOnChartArea: true,
+          color: chiGrey,
+          borderDash: [2, 5]
+        },
+        ticks: {
+          beginAtZero: true
+        }
+      }
+    },
+    tooltips: {
+        callbacks: {
+            label: function(tooltipItem, data) {
+                var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                if (label) {
+                    label += ': ';
+                }
+                label += Math.round(tooltipItem.yLabel * 100) / 100;
+                return label;
+            }
+        }
+      }
+  };
+
+  //console.log(basicLine, basicBar)
+  return { basicLine, basicBar }
 };
 
-var death_option = {
-  title: {
-    display: true,
-    text: 'Deaths (total)'
-  },
-  layout: {
-    padding: 25
-  },
-  tooltips: {
-    mode: 'index',
-    intersect: false
-  },
-  elements: {
-    point: {
-      radius: 0
-    }
-  },
-  scales: {
-       xAxes: [{
-         gridLines: {
-            display: false,
-            drawBorder: false,
-          }
-       }],
-       yAxes: [{
-         stacked: true,
-          gridLines: {
-            drawBorder: false,
-            drawOnChartArea: true,
-            color: chiGrey,
-            borderDash: [2, 5]
-           }
-        }]
-   }
-};
-
-var lines = [], id = 0;
-var linesOn = false;
 
 async function getDeathData() {
   const response = await fetch(dailyCasesDeaths)
@@ -164,7 +209,7 @@ async function getDeathData() {
   // Sort the JSON file by date
   // Source: https://www.geeksforgeeks.org/sort-an-object-array-by-date-in-javascript/
   const sortedJSON = jsonfile.slice().sort((a, b) => a.lab_report_date > b.lab_report_date ? 1 : -1)
-  console.log(sortedJSON)
+  //console.log(sortedJSON)
 
   var labels = sortedJSON.map(function(row) {
     return new Date(row.lab_report_date);
@@ -277,15 +322,18 @@ async function getPctPos() {
     }
   })
 
+  var ordered_labels = labels.reverse().slice(1,)
+  var ordered_pct_pos = daily_pct_pos.reverse().slice(1,)
+
   // Calculate rolling average over 7-day window
   var avg_pct_pos = []
   for (i = 0; i < daily_pct_pos.length; i++) {
      if (i == 0) {
-       avg_pct_pos.push(daily_pct_pos[i])
+       avg_pct_pos.push(ordered_pct_pos[i])
      } else if (i < 6) {
-      avg_pct_pos.push((avg_pct_pos[i-1] + daily_pct_pos[i])/ i+1)
+      avg_pct_pos.push((avg_pct_pos[i-1] + ordered_pct_pos[i])/ i+1)
      } else {
-       var total = daily_pct_pos.slice(i-6, i+1)
+       var total = ordered_pct_pos.slice(i-6, i+1)
        var sum = total.reduce(function(a, b) {
          return a + b;
        })
@@ -293,8 +341,11 @@ async function getPctPos() {
      }
   }
 
-  //console.log(labels, avg_pct_pos)
-  return { labels, avg_pct_pos }
+  //console.log(ordered_labels, avg_pct_pos)
+  //console.log(ordered_labels[0], avg_pct_pos[0])
+  //console.log(typeof avg_pct_pos[0])
+
+  return { ordered_labels, avg_pct_pos }
 }
 
 
@@ -378,7 +429,9 @@ async function getAvgCases() {
 
 async function chartDeaths() {
   const data = await getDeathData();
+  const options = await formatChartOptions('dailyDeathsTotal');
   const ctx = document.getElementById('deaths_by_race').getContext('2d');
+
   const chart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -392,16 +445,8 @@ async function chartDeaths() {
           borderWidth: 1
         }
       ],
-    options: {
-      scales: {
-        yAxes: {
-          ticks: {
-            beginAtZero: true
-          }
-        }
+    options: options.basicBar
       }
-    }
-    }
   })
 }
 
@@ -448,22 +493,36 @@ async function chartTests() {
             beginAtZero: true
           }
         }
-      }
-    }
+      },
+      tooltips: {
+            callbacks: {
+                label: function(tooltipItem, data) {
+                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                    if (label) {
+                        label += ': ';
+                    }
+                    label += Math.round(tooltipItem.yLabel * 100) / 100;
+                    return label;
+                }
+            }
+          }
+        }
   })
 }
 
 async function chartPctPos() {
   const data = await getPctPos();
+  const options = await formatChartOptions('dailyTestByTest');
   const ctx = document.getElementById('percent_positivity').getContext('2d');
 
   const chart = new Chart(ctx, {
     type: 'LineWithLine',
     data: {
-      labels: data.labels.reverse(),
+      labels: data.ordered_labels,
       datasets: [{
         label: 'Citywide',
-        data: data.avg_pct_pos.reverse(),
+        data: data.avg_pct_pos,
         fill: false,
         backgroundColor: chiGrey,
         borderColor: chiGrey,
@@ -473,7 +532,7 @@ async function chartPctPos() {
     options: {
       title: {
         display: true,
-        text: 'Percent positivity (7-day rolling average) over time'
+        text: dictAPIs['dailyTestByTest'].description
       },
       layout: {
         padding: 25
@@ -489,48 +548,36 @@ async function chartPctPos() {
       },
       scales: {
            xAxes: [{
+             id: 'x-axis',
              gridLines: {
                 display: false,
                 drawBorder: false,
               }
            }],
            yAxes: [{
+              id: 'y-axis',
               gridLines: {
                 drawBorder: false,
                 drawOnChartArea: true,
                 color: chiGrey,
                 borderDash: [2, 5]
                }
-             }]
-           } /*,
-      onHover: function(evt) {
-        console.log("onHover", evt.type);
-        if (evt.type == 'mousemove' && linesOn == false) {
-          linesOn = true;
-          percent_positivity.options.annotation.annotations = lines;
-          percent_positivity.update();
-        } else if (evt.type == 'mouseout' && linesOn == true) {
-          linesOn = false;
-          percent_positivity.options.annotation.annotations = [];
-          percent_positivity.update();
-        }
+            }]
        },
-        onClick: function(evt, chart) {
-          var el = percent_positivity.getElementAtEvent(evt);
-          console.log("onClick", el, evt);
-       },
-        annotation: {
-          drawTime: "afterDraw",
-          annotations: lines
-        }*/
+      annotation: {
+        drawTime: "afterDraw",
+        annotations: lines.percentPos
       }
+    } //options.basicLine
     })
   };
 
 
 async function chartTotal() {
   const data = await getAvgCases();
+  const options = await formatChartOptions('dailyCaseRate');
   const ctx = document.getElementById('chart1').getContext('2d');
+
   const chart = new Chart(ctx, {
     type: 'LineWithLine',
     data: {
@@ -545,14 +592,15 @@ async function chartTotal() {
           }
         ]
       },
-    options: case_option
+    options: options.basicLine
   })
 };
 
 async function chart80PlusCases() {
   const data = await getAvgCases();
-
+  const options = await formatChartOptions('dailyCaseRate');
   const ctx = document.getElementById('chart2').getContext('2d');
+
   const chart = new Chart(ctx, {
     type: 'LineWithLine',
     data: {
@@ -574,14 +622,14 @@ async function chart80PlusCases() {
           }
         ]
       },
-    options: case_option
+    options: options.basicLine
     })
 };
 
 async function chartAllAgesCases() {
   const data = await getAvgCases();
-
   const ctx = document.getElementById('chart3').getContext('2d');
+
   const chart = new Chart(ctx, {
     type: 'LineWithLine',
     data: {
@@ -627,13 +675,14 @@ async function chartAllAgesCases() {
       options: {
         title: {
           display: true,
-        text: 'Case rate per 100,000 over time'
+          text: dictAPIs['dailyCaseRate'].description
         },
         layout: {
           padding: 25
         },
         tooltips: {
-          enabled: false
+          mode: 'index',
+          intersect: false
         },
         elements: {
           point: {
@@ -658,49 +707,13 @@ async function chartAllAgesCases() {
                  }
               }]
          },
-         onHover: function(evt) {
-           console.log("onHover", evt.type);
-          if (evt.type == 'mousemove' && linesOn == false) {
-             linesOn = true;
-             chart3.options.annotation.annotations = lines;
-             chart3.update();
-          } else if (evt.type == 'mouseout' && linesOn == true) {
-             linesOn = false;
-             chart3.options.annotation.annotations = [];
-             chart3.update();
-          }
-        },
-        onClick: function(evt, chart) {
-          var el = chart3.getElementAtEvent(evt);
-          console.log("onClick", el, evt);
-        },
         annotation: {
           drawTime: "afterDraw",
-          annotations: lines
+          annotations: lines.allAgesCases
         }
     }
   })
 };
-
-/**
-async function plotLineChart(dataSource, chartID) {
-  /**
-  * Plots a generic line chart using chart.js
-  *
-  * Inputs:
-  * 	- dataSource (fn): function that imports data using API
-  * 	- chartID (str): name of canvas e.g., 'chart1'
-  *
-  const data = await dataSource
-  const ctx = document.getElementById(chartID).getContext('2d');
-
-  const chart = new Chart(ctx, {
-    type: 'LineWithLine'
-
-  }
-  )
-}
-*/
 
 // Note: Need to abstract these functions...
 
@@ -709,10 +722,12 @@ async function start() {
   chartTests()
   chartTotal()
   chart80PlusCases()
-  addLine("06-26", "June 26: Chicago enters Phase IV of Reopening", "vertical", "x-axis")
-  chartAllAgesCases() // Need to filter dates here
+
+  addLine("allAgesCases", "06-26", "June 26: Chicago enters Phase IV of Reopening", "vertical", "x-axis")
+  addLine("percentPos", "5", "Target: Below 5 percent positive", "horizontal", "y-axis")
+
+  chartAllAgesCases()
   chartPctPos()
-  //addLine(5, "TK", "horizontal", "y-axis")
 };
 
 start();

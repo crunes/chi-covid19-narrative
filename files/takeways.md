@@ -22,21 +22,20 @@ __Structure__
 ### What I wanted to accomplish
 The optimistic end-product for this project was a single webpage that pulled data directly from [Chicago Data Portal](https://data.cityofchicago.org/) APIs and built data visualizations in a scrollytelling format à la [Pudding](https://pudding.cool/) (check out their visual essays on [how fluid middle-class families are](https://pudding.cool/2020/08/income/) on the U.S. income distribution and [what prosecution data tell us](https://pudding.cool/2019/10/prosecutors/) about a new state's attorney). The charts would have simple visual hierarchy and elegant annotations, and the code handling the JSON files would be neat and abstract.
 
-### What I actually ended up with
-…not exactly that. And that's okay! I built out [a simple webpage](https://crunes.github.io/chi-covid19-narrative/) with interactive charts using the [Chicago Design System](https://github.com/Chicago/design-system-site) hosted on GitHub Pages, in a repo with one HTML and one JavaScript file. Our team is exploring ways we can repurpose this template as a product parallel to City dashboards.
+### What I actually built
+…not exactly that. And that's okay! I developed [a simple webpage](https://crunes.github.io/chi-covid19-narrative/) with interactive charts using the [Chicago Design System](https://github.com/Chicago/design-system-site) hosted on GitHub Pages, in a repo with one HTML and one JavaScript file. Our team is exploring ways we can repurpose this template as a product parallel to City dashboards.
 
 _Example 1. Rising COVID-19 case rates among 18 to 29 year olds in the latter half of the summer_
 ![Image](https://github.com/crunes/chi-covid19-narrative/blob/master/files/chart1.jpg)
 
 ## My decidedly-non-linear-journey with JavaScript and chart.js
-Before I started my fellowship with the City, I programmed in Python and R but hadn't written in line of HTML or JavaScript in over 10 years. I used a variety of open-source tools 
+Before I started my fellowship with the City, I programmed in Python and R but hadn't written in line of HTML or JavaScript in over 10 years. I used a variety of open-source tools to learn how to design and develop interactive data visualizations
 
 ### Open-source resources and tools
 - __[CodePen](https://codepen.io/about/)__: a social development environment that allows you to write code in the browser, and see the results of it as you build. Primarily focuses on front-end languages like HTML, CSS, JavaScript, and preprocessing syntaxes that turn into those things.
 - __[Figma](https://www.figma.com/@chicago)__: a vector graphics editor and prototyping tool. Primarily web-based, with additional offline features enabled by desktop applications for macOS and Windows
 - __[The Coding Train](https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw)__: a YouTube channel with Daniel Schiffman, dedicated to beginner-friendly creative coding tutorials and challenges
 - __[Observable](https://observablehq.com/)__: a web-first, thoughtfully collaborative, computational notebook. Primarily used with front-end languages like JavaScript.
-- __[Jupyter Notebook](https://jupyter.org/)__: an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Uses include data cleaning and transformation, numerical simulation, statistical modeling, data visualization, machine learning, and much more.
 
 _Example 2. Older Chicagoans' case rate peak two and half times that of the citywide case rate_
 ![Image](https://github.com/crunes/chi-covid19-narrative/blob/master/files/chart2.png)

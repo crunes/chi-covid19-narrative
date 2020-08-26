@@ -29,7 +29,7 @@ _Example 1. Rising COVID-19 case rates among 18 to 29 year olds in the latter ha
 ![Image](https://github.com/crunes/chi-covid19-narrative/blob/master/files/chart1.jpg)
 
 ## My decidedly-non-linear-journey with JavaScript and chart.js
-Before I started my fellowship with the City, I programmed in Python and R but hadn't written in line of HTML or JavaScript in over 10 years. I used a variety of open-source tools to learn how to design and develop interactive data visualizations
+Before I started my fellowship with the City, I programmed in Python and R but hadn't written in line of HTML or JavaScript in over 10 years. I used a variety of open-source tools to get up to speed and learn how to design and develop these interactive data visualizations.
 
 ### Open-source resources and tools
 - __[CodePen](https://codepen.io/about/)__: a social development environment that allows you to write code in the browser, and see the results of it as you build. Primarily focuses on front-end languages like HTML, CSS, JavaScript, and preprocessing syntaxes that turn into those things.

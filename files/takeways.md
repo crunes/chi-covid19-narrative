@@ -29,7 +29,7 @@ _Example 1. Rising COVID-19 case rates among 18 to 29 year olds in the latter ha
 ![Image](https://github.com/crunes/chi-covid19-narrative/blob/master/files/chart1.jpg)
 
 ## My decidedly-non-linear-journey with JavaScript and chart.js
-Before I started my fellowship with the City, I programmed in Python and R but hadn't written in line of HTML or JavaScript in over 10 years. I used a variety of open-source tools to get up to speed and learn how to design and develop these interactive data visualizations.
+Before I started my fellowship with the City, I programmed in Python and R but hadn't written a line of HTML or JavaScript in over 10 years. I used a variety of open-source tools to get up to speed and learn how to design and develop these interactive data visualizations.
 
 ### Open-source resources and tools
 - __[CodePen](https://codepen.io/about/)__: a social development environment that allows you to write code in the browser, and see the results of it as you build. Primarily focuses on front-end languages like HTML, CSS, JavaScript, and preprocessing syntaxes that turn into those things.
@@ -52,6 +52,6 @@ _Example 2. Older Chicagoans' case rate peak two and half times that of the city
 - Ask for feedback early and often
 
 ## What's next?
-- __Weigh the benefits and costs of shifting to D3 library__. Chart.js is relatively user-friendly for getting started with simple interactive charts, but adding custom elements - like vertical line tooltips and text annotations - was more complicated than I had anticipated. If our team has a flexible timeline, I would recommend moving to D3. This would also allow the team to develop data visualizations collaboratively over 
+- __Weigh the benefits and costs of shifting to D3 library__. Chart.js is relatively user-friendly for getting started with simple interactive charts, but adding custom elements - like vertical line tooltips and text annotations - was more complicated than I had anticipated. If our team has a flexible timeline, I would recommend moving to D3. This would also allow the team to develop data visualizations collaboratively.
 - __Brainstorm use cases with key City staff__. Our team has discussed how this kind of web page might be a useful product that parallels dashboards, but takes a more narrative-driven approach. Communications staff in all City agencies and departments might also have ideas about data they'd like to highlight. 
 - __Continue to improve code for scalability and reproducibility__. This first-go at the code has a lot of room for improvement. The project developer(s) will need to update the script and any accompanying documentation as needed to make sure that others can reproduce this kind of web page with different data sources and chart styles
